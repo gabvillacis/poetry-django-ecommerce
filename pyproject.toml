@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "django-ecommerce"
+version = "0.1.0"
+description = "Django Ecommerce"
+authors = ["Gabriel Villacis <gab_villacis@hotmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "django_ecommerce"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.1.6"
+psycopg2 = "^2.9.5"
+pillow = "^9.4.0"
+django-environ = "^0.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
