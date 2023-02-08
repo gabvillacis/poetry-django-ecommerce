@@ -16,7 +16,7 @@ class Category(models.Model):
     
 """Definición de modelo Product para almacenar el inventario de productos"""
 class Product(models.Model):    
-    category = models.ManyToManyField(Category, related_name="products")
+    categories = models.ManyToManyField(Category, related_name="products", )
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     slug = models.SlugField(max_length=255, unique=True)
@@ -69,7 +69,7 @@ class Order(models.Model):
     @property
     def total(self):
         order_items = self.order_items.all()
-        total = sum([item.get_subtotal for item in order_items])
+        total = sum([item.subtotal for item in order_items])
         return total
 
     @property
