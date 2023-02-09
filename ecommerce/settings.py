@@ -28,8 +28,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -41,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
-    'django_extensions'
+    'django_extensions',
+    'django_bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'store.context_processors.get_all_categories'
             ],
         },
     },

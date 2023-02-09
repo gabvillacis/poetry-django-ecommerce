@@ -13,30 +13,32 @@
      <!-- Navigation-->
      <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container px-4 px-lg-5">
-            <a class="navbar-brand" href="#!">Vila Store</a>
+            <a class="navbar-brand" href="{% url 'index' %}">Vila Store</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categorías</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">Todas las categorías</a></li>
+                            <li><a class="dropdown-item" href="{% url 'index' %}">Todas las categorías</a></li>
                             <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-item" href="#!">Electrónicos</a></li>
-                            <li><a class="dropdown-item" href="#!">Libros</a></li>
-                            <li><a class="dropdown-item" href="#!">Televisores</a></li>
+                            {% for category in categories %}
+                                <li><a class="dropdown-item" href="{% url 'get_products_by_category' cat_id=category.id %}">{{ category.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <button class="btn btn-outline-dark" type="submit">
-                        <i class="bi-cart-fill me-1"></i>
-                        Carrito
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">5</span>
-                    </button>
-                </form>
+                <ul class="nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a href="#" class="nav-link link-dark px-2">Bienvenido, {{ user.username }}</a></li>
+                        <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link link-dark px-2">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a href="{% url 'signin' %}" class="nav-link link-dark px-2">Sign in</a></li>
+                        <li class="nav-item"><a href="{% url 'signup' %}" class="nav-link link-dark px-2">Sign up</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>
@@ -51,7 +53,7 @@
     </header>
     <!-- Main-->
     <main class="py-3">
-          {% block content %}{% endblock %}        
+        {% block content %}{% endblock %}        
     </main>
     <!-- Footer-->
     <footer class="py-5 bg-dark">

@@ -37,6 +37,21 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-bootstrap5"
+version = "22.2"
+description = "Bootstrap 5 for Django"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-bootstrap5-22.2.tar.gz", hash = "sha256:e944f5ced342e0e16cde77e1ddacb4b9fd5bce4cc190df2f7da0b8e18a24c9cb"},
+    {file = "django_bootstrap5-22.2-py3-none-any.whl", hash = "sha256:5d677bbfb94207c1a034d63a5f39d95ce287ef509e0b31dfb4d233cc81f93bcc"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
 name = "django-environ"
 version = "0.9.0"
 description = "A package that allows you to utilize 12factor inspired environment variables to configure your Django application."
@@ -209,4 +224,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "57f045f09bdd1138a1dde24712c0989937cd0e7811d355ae12ba83a0046be990"
+content-hash = "e1c30ff0baab9af2e97ea981e5190236937e0789412f04cbf00ec34572588b51"
