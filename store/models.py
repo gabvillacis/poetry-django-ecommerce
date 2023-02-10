@@ -49,13 +49,13 @@ class Address(models.Model):
         verbose_name_plural = 'addresses'
 
     def __str__(self) -> str:
-        return 'Dirección: ' + self.id
+        return 'Dirección: ' + self.address
 
 
 """Definición de modelo Order para almacenar los pedidos generados"""
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    address = models.OneToOneField(Address, on_delete=models.SET_NULL, null=True)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     total_amount = models.DecimalField(max_digits=9, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)	

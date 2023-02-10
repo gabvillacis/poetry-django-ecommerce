@@ -31,6 +31,13 @@
                     </li>
                 </ul>
                 <ul class="nav">
+                    <li class="nav-item">
+                        <a href="{% url 'cart' %}" class="nav-link link-dark px-2"><img src="{% static 'img/cart.png' %}" witdh="20" height="20">
+                            <span id="cart-items-span" class="badge bg-primary ms-1">
+                                {{ cart_items }}
+                            </span>
+                        </a>
+                    </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item"><a href="#" class="nav-link link-dark px-2">Bienvenido, {{ user.username }}</a></li>
                         <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link link-dark px-2">Logout</a></li>

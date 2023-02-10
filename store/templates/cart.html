@@ -1,0 +1,92 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container">
+    {% if cart|length == 0 %}
+    <p class="text-center">Tu carrito está vacío</p>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Imagen</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>                
+            {% for item in cart %}
+                <tr id="tr-{{item.product.id}}">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td><img src="{{ item.product.image.url }}" width="100" height="75"></td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price }}</td>
+                    <td>{{ item.subtotal }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteFromCart('{{item.product.id}}')">-</button>
+                    </td>
+                </tr>
+            {% endfor %}            
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"></td>
+                    <td><b>Total:</b></td>
+                    <td>{{ cart_items }}</td>
+                    <td></td>
+                    <td>$ {{ cart_total }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-4 text-center">
+            <button class="btn btn-outline-dark" onclick="createOrder()">Guardar Pedido</a>            
+        </div>
+    </div>    
+    {% endif %}
+</div>
+<script>
+    function deleteFromCart(productId){
+        let data = {
+            product_id: productId
+        }
+  
+        fetch("{% url 'remove_from_cart' %}", {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {  "Content-type": "application/json; charset=UTF-8",
+                        "X-CSRFToken": "{{csrf_token}}"}
+        })
+        .then(res => res.json())
+        .then(data => location.href = "{% url 'cart' %}");
+    }
+
+    function createOrder(){
+        let data = {}
+        fetch("{% url 'create_order' %}", {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {  "Content-type": "application/json; charset=UTF-8",
+                        "X-CSRFToken": "{{csrf_token}}"}
+        })
+        .then(res => {
+            if(!res.ok){
+                throw Error("El pedido no pudo ser registrado.");
+            }
+            return res.json();
+        })   
+        .then(data => {
+            alert('Se registró exitosamente el pedido: #' + data.order_id);
+            location.href = "{% url 'index' %}";
+        })
+        .catch(error => alert(error));
+    }
+</script>
+{% endblock %}

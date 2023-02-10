@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product
+from .models import *
 from .forms import SignUpForm
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
@@ -7,6 +7,10 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
+from .cart_session import ShoppingCartSession
+import json
+from django.http import JsonResponse
+from django.db import transaction
 
 # Create your views here.
 
@@ -34,6 +38,10 @@ def signup(request):
             first_name = sign_up_form.cleaned_data['first_name']
             last_name = sign_up_form.cleaned_data['last_name']
             email = sign_up_form.cleaned_data['email']
+            country = sign_up_form.cleaned_data['country']
+            city = sign_up_form.cleaned_data['city']
+            address = sign_up_form.cleaned_data['address']
+            cellphone = sign_up_form.cleaned_data['cellphone']
             
             if User.objects.filter(username=username).exists():
                 messages.error(request, "El username ingresado ya está siendo utilizado!")
@@ -45,11 +53,19 @@ def signup(request):
                     first_name=first_name,
                     last_name=last_name,
                     email=email,
-                    is_staff=True,
+                    is_staff=False,
                     is_active=True,
                     date_joined=datetime.datetime.now()
                 )
-                new_user.save()                
+                new_user.save()
+                
+                address = Address(user=new_user,
+                                  country=country,
+                                  city=city,
+                                  address=address,
+                                  cellphone=cellphone)                
+                address.save()
+                                
                 return redirect('success_signup')
     else:
         sign_up_form = SignUpForm()        
@@ -80,3 +96,56 @@ def do_signin(request):
 def do_logout(request): 
     logout(request)    
     return redirect('index')
+
+def add_to_cart(request):
+    cart = ShoppingCartSession(request)
+    
+    payload = json.loads(request.body)
+    product_id = int(payload.get('product_id'))
+    quantity = int(payload.get('quantity'))
+    
+    try:
+        existing_product = Product.objects.get(pk=product_id)
+        cart.add(existing_product.id, quantity=quantity)
+        return JsonResponse(status=200, data={'result': True, 'message': 'OK', 'count_items': cart.__len__()})
+    except Product.DoesNotExist:
+        return JsonResponse(status=400, data={'result': False, 'message': 'El producto no existe.'})
+    
+def remove_from_cart(request):
+    cart = ShoppingCartSession(request)
+    
+    payload = json.loads(request.body)
+    product_id = int(payload.get('product_id'))
+    
+    cart.delete(product_id)
+    return JsonResponse(status=200, data={'result': True, 'message': 'OK', 'count_items': cart.__len__()})
+
+def get_shopping_cart(request):
+    cart = ShoppingCartSession(request)    
+    return render(request, 'cart.html', {'cart': cart.get_cart_detail(), 'cart_items': cart.__len__(), 'cart_total': cart.get_total()})
+
+@transaction.atomic
+def create_order(request):
+    cart = ShoppingCartSession(request)  
+    
+    if cart.__len__() == 0:
+        messages.error(request, "No ha añadido items en el carrito, está vacío.")
+    else:
+        try:
+            
+            address = Address.objects.get(user=request.user)            
+            order = Order(  user=request.user,
+                            address=address,
+                            total_amount=cart.get_total())
+            order.save()
+
+            for item in cart.get_cart_detail():
+                order_item = OrderItem( order=order,
+                                        product=item['product'],
+                                        quantity=item['quantity'])
+                order_item.save()
+                
+            cart.clear()
+            return JsonResponse(data={"order_id": order.id}, status=201)
+        except Exception as error:
+            return JsonResponse(data={"error_msg": "Opps, su pedido no pudo ser ingresado. " + repr(error)}, status=500)
