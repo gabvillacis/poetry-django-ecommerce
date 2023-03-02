@@ -9,7 +9,7 @@ packages = [{include = "ecommerce"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = "^4.1.6"
+Django = "^4.1.7"
 psycopg2-binary = "^2.9.5"
 pillow = "^9.4.0"
 django-environ = "^0.9.0"
